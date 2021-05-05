@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>物连家美——界面展示技术（优化）</title>
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+</style>
+</head>
+</head>
+<body>
+    <h1>物连家美——界面展示技术（优化）</h1>
+    <p> =============提交成功===============</p>
+      
+  
+</body>
+<script>
+   // $(document).ready(function(){
+         //$("p").text("Hello World!");
+        // alert("界面技术");
+   // });
+
+  // $("#login_form").on("submit", function(ev) {
+
+    //将form转为AJAX提交
+function ajaxSubmit(frm, fn) {
+  var dataPara = getFormJson(frm);
+  var dataStr = JSON.stringify(dataPara)
+  //var dataPara ="abc";
+   alert(dataStr);
+  $.ajax({
+    url: "http://localhost:9081/demo/user",
+    type: "post",
+    dataType: "text",
+    data: { jsonStr: dataStr },
+    success: function(res){
+                alert("==== hello,res===")
+                var result = $.parseJSON(res);
+                if(200 === result.code){
+                    window.location.href = "/gateway/list/grayUserList";
+                }else{
+                    alert(result.msg);
+                }
+     },
+    error: Error
+
+  });
+}
+//将form中的值转换为键值对。
+function getFormJson(frm) {
+  var o = {};
+  var a = $(frm).serializeArray();
+  $.each(a, function () {
+   
+    if (o[this.name] !== undefined) {
+      if (!o[this.name].push) {
+        o[this.name] = [o[this.name]];
+      }
+      o[this.name].push(this.value || '');
+      
+      
+    } else {
+     // alert(this.name+"--->"+this.value);
+      o[this.name] = this.value || '';
+    }
+  });
+  return o;
+}
+
+
+//调用
+$(document).ready(function(){
+    $('#user_form').bind('submit', function(){
+        ajaxSubmit(this);
+    });
+});
+
+$("#login_form").on("submit", function(ev) {
+        console.log("登录按钮被点击!");
+        var username = $('#username').val();
+        var password = $('#password').val();
+        $.ajax({
+            url: "/gateway/login",
+            type: "post",
+            dataType: "text",
+            data: { username: username, password: password },
+            success: function(res){
+                var result = $.parseJSON(res);
+                if(200 === result.code){
+                    window.location.href = "/gateway/list/grayUserList";
+                }else{
+                    alert(result.msg);
+                }
+            },
+            error: Error
+        });
+
+        // window.location.href = "/grayUserList";
+        //阻止submit表单提交
+        ev.preventDefault();
+    });
+</script>
+
+
+
+
+
+</html>

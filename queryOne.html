@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>xCode基础架构研究</title>
+    <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+</style>
+</head>
+</head>
+<body>
+    <h1>案例——查询单条结果（最多1条）</h1>
+    <p></p>
+    <span>===========搜索条件==============</span>
+    <form id="query_form">
+       ID编号： <input type="text" name="id" id="id" ><br><br>
+       <input type="submit" value="查 询" />
+    </form>
+     
+    <span>===============查询结果==============</span>
+    <dev id="showResult"></dev>
+</body>
+<script>
+   // $(document).ready(function(){
+         //$("p").text("Hello World!");
+        // alert("界面技术");
+   // });
+
+  // $("#login_form").on("submit", function(ev) {
+
+  
+//将form中的值转换为键值对。
+function getFormJson(frm) {
+  var o = {};
+  var formAttrs = $(frm).serializeArray();
+  $.each(formAttrs, function () {
+    var x = this;
+    //alert(x.name+"--->"+x.value);
+    o[x.name] = x.value || '';
+    console.log(x.name+"--->"+x.value)
+    
+  });
+  return o;
+}
+
+
+
+$("#query_form").on("submit", function(ev) {
+        console.log("登录按钮被点击!");
+        var dataPara = getFormJson(this);
+        var dataStr = JSON.stringify(dataPara);
+        alert("提交参数："+dataStr);
+        $.ajax({
+            url: "http://localhost:9080/xcode/api/queryOne?servletPath=student/queryById", 
+            type: "get",
+            dataType: "text",
+            data: { jsonStr: dataStr },
+            success: function(res){
+                console.log(" >>> 接收到服务端数据："+res)
+                var result = $.parseJSON(res);
+                if(0 === result.code){
+                    alert(result.msg);
+                    $('#showResult').append("<br><span>"+JSON.stringify(result.data)+"</span>");
+                    //window.location.href = "/success.html";
+                }else{
+                    alert(result.msg);
+                }
+            },
+            //请求失败，包含具体的错误信息
+            error : function(e){
+                console.log(e.status);
+                console.log(e.responseText);
+            }
+
+        });
+
+        // window.location.href = "/grayUserList";
+        //阻止submit表单提交
+        ev.preventDefault();
+    });
+</script>
+
+
+
+
+
+</html>

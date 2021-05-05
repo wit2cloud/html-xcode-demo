@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>xCode基础架构研究</title>
+        <script type="text/javascript" src="js/jquery-3.5.1.min.js"></script>
+    </style>
+    </head>
+    </head>
+</head>
+<body>
+    <h1>案例—更新操作</h1>
+    <p></p>
+
+    <form id="user_form">
+       id编号： <input type="text" name="id" id="id" ><br><br>
+       姓名： <input type="text" name="name" id="name" ><br><br>
+       年龄： <input type="text" name="age" id="age" ><br><br>
+       学校： <input type="text" name="school" id="school" ><br><br>
+       地址： <input type="text" name="addr" id="addr" ><br><br>
+       <input type="submit" value="更 新" />
+    </form>
+
+</body>
+<script>
+   // $(document).ready(function(){
+         //$("p").text("Hello World!");
+        // alert("界面技术");
+   // });
+
+  // $("#login_form").on("submit", function(ev) {
+
+  
+//将form中的值转换为键值对。
+function getFormJson(frm) {
+  var o = {};
+  var formAttrs = $(frm).serializeArray();
+  $.each(formAttrs, function () {
+    var x = this;
+    //alert(x.name+"--->"+x.value);
+    o[x.name] = x.value || '';
+    console.log(x.name+"--->"+x.value)
+    
+  });
+  return o;
+}
+
+
+
+$("#user_form").on("submit", function(ev) {
+        console.log("登录按钮被点击!");
+        var dataPara = getFormJson(this);
+        var dataStr = JSON.stringify(dataPara);
+        alert("提交参数："+dataStr);
+        $.ajax({
+            url: "http://localhost:9080/xcode/api/update?servletPath=student/update", 
+            type: "post",
+            dataType: "text",
+            data: { jsonStr: dataStr },
+            success: function(res){
+                console.log(" >>> 接收到服务端数据："+res)
+                var result = $.parseJSON(res);
+                if(0 === result.code){
+                    alert(result.msg);
+                     window.location.href = "/success.html";
+                }else{
+                    alert(result.msg);
+                }
+            },
+            //请求失败，包含具体的错误信息
+            error : function(e){
+                console.log(e.status);
+                console.log(e.responseText);
+            }
+
+        });
+
+        // window.location.href = "/grayUserList";
+        //阻止submit表单提交
+        ev.preventDefault();
+    });
+</script>
+
+
+
+
+
+</html>
